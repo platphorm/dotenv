@@ -5,7 +5,8 @@ require "dotenv/missing_keys"
 # The top level Dotenv module. The entrypoint for the application logic.
 module Dotenv
   class << self
-    attr_accessor :instrumenter
+    attr_accessor :instrumenter, :parser
+    @parser = Parser
   end
 
   module_function
@@ -13,7 +14,7 @@ module Dotenv
   def load(*filenames)
     with(*filenames) do |f|
       ignoring_nonexistent_files do
-        env = Environment.new(f, true)
+        env = Environment.new(f, true, parser)
         instrument("dotenv.load", env: env) { env.apply }
       end
     end
@@ -22,7 +23,7 @@ module Dotenv
   # same as `load`, but raises Errno::ENOENT if any files don't exist
   def load!(*filenames)
     with(*filenames) do |f|
-      env = Environment.new(f, true)
+      env = Environment.new(f, true, parser)
       instrument("dotenv.load", env: env) { env.apply }
     end
   end
@@ -31,7 +32,7 @@ module Dotenv
   def overload(*filenames)
     with(*filenames) do |f|
       ignoring_nonexistent_files do
-        env = Environment.new(f, false)
+        env = Environment.new(f, false, parser)
         instrument("dotenv.overload", env: env) { env.apply! }
       end
     end
@@ -40,7 +41,7 @@ module Dotenv
   # same as `overload`, but raises Errno::ENOENT if any files don't exist
   def overload!(*filenames)
     with(*filenames) do |f|
-      env = Environment.new(f, false)
+      env = Environment.new(f, false, parser)
       instrument("dotenv.overload", env: env) { env.apply! }
     end
   end
@@ -49,7 +50,7 @@ module Dotenv
   def parse(*filenames)
     with(*filenames) do |f|
       ignoring_nonexistent_files do
-        Environment.new(f, false)
+        Environment.new(f, false, parser)
       end
     end
   end
