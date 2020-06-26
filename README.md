@@ -62,7 +62,7 @@ Dotenv.load
 
 By default, `load` will look for a file called `.env` in the current working directory. Pass in multiple files and they will be loaded in order. The first value set for a variable will win.
 
-```
+```ruby
 require 'dotenv'
 Dotenv.load('file1.env', 'file2.env')
 ```
@@ -217,6 +217,29 @@ If you use this gem to handle env vars for multiple Rails environments (developm
 ### Should I commit my .env file?
 
 Credentials should only be accessible on the machines that need access to them. Never commit sensitive information to a repository that is not needed by every development machine and server.
+
+
+You can use the `-t` or `--template` flag on the dotenv cli to create a template of your `.env` file.
+```shell
+$ dotenv -t .env
+```
+A template will be created in your working directory named `{FINAME}.template`. So in the above example, it would create a `.env.template` file. 
+
+The template will contain all the environment variables in your `.env` file but with their values set to the variable names.
+
+```shell
+# .env
+S3_BUCKET=YOURS3BUCKET
+SECRET_KEY=YOURSECRETKEYGOESHERE
+```
+
+Would become 
+
+```shell
+# .env.template
+S3_BUCKET=S3_BUCKET
+SECRET_KEY=SECRET_KEY
+```
 
 Personally, I prefer to commit the `.env` file with development-only settings. This makes it easy for other developers to get started on the project without compromising credentials for other environments. If you follow this advice, make sure that all the credentials for your development environment are different from your other deployments and that the development credentials do not have access to any confidential data.
 
